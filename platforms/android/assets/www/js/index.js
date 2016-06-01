@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -34,6 +35,32 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+
+        function failure(reason) {
+            alert("There was a problem.");
+        }
+
+        nfc.addNdefListener(
+            app.onNdef,
+            function() {
+                alert("Listening for NDEF tags.");
+            },
+            failure
+        );
+
+
+    },
+    onNdef: function (nfcEvent) {
+        var tag = nfcEvent.tag;
+
+        // BB7 has different names, copy to Android names
+        if (tag.serialNumber) {
+            tag.id = tag.serialNumber;
+            tag.isWritable = !tag.isLocked;
+            tag.canMakeReadOnly = tag.isLockable;
+        }
+
+        document.getElementById("outText").innerHTML = JSON.stringify(tag) + "<br/><br/><br/><br/>Message: " + "<br/><br/>" +   nfc.bytesToString(tag.ndefMessage[0].payload).substring(3);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

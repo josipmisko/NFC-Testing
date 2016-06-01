@@ -12,6 +12,9 @@
         },
         "phonegap-nfc": {
             "PACKAGE_NAME": "com.example.rfidtest"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.example.rfidtest"
         }
     },
     "dependent_plugins": {}

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -34,6 +35,8 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+
+        document.getElementById("startButton").addEventListener('click',startScanning, false);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -47,5 +50,34 @@ var app = {
         console.log('Received Event: ' + id);
     }
 };
+
+function startScanning()
+{
+  document.getElementById("outText").innerHTML = "";
+  nfc.addNdefListener (
+          function (nfcEvent) {
+              var tag = nfcEvent.tag,
+                  ndefMessage = tag.ndefMessage;
+
+              // dump the raw json of the message
+              // note: real code will need to decode
+              // the payload from each record
+              //alert(JSON.stringify(ndefMessage));
+
+              document.getElementById("outText").innerHTML = JSON.stringify(ndefMessage) + "<br/><br/>" + nfc.bytesToString(ndefMessage[0].payload).substring(3);
+
+
+              // assuming the first record in the message has
+              // a payload that can be converted to a string.
+              //alert(nfc.bytesToString(ndefMessage[0].payload).substring(3));
+          },
+          function () { // success callback
+              alert("Waiting for NDEF tag");
+          },
+          function (error) { // error callback
+              alert("Error adding NDEF listener " + JSON.stringify(error));
+          }
+      );
+}
 
 app.initialize();
