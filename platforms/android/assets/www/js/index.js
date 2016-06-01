@@ -43,7 +43,7 @@ var app = {
         nfc.addNdefListener(
             app.onNdef,
             function() {
-                alert("Listening for NDEF tags.");
+                document.getElementById("rfidStatus").innerText = "Listening for NDEF tags.";
             },
             failure
         );
