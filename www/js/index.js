@@ -17,6 +17,8 @@
  * under the License.
  */
 
+var writing = false;
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -39,7 +41,12 @@ var app = {
         function failure(reason) {
             alert("There was a problem.");
         }
-
+        function writeOnTag()
+        {
+          writing = true;
+          document.getElementById("outText").innerHTML = "";
+          alert("Scan the tag to write on it.");
+        }
         nfc.addNdefListener(
             app.onNdef,
             function() {
@@ -48,19 +55,39 @@ var app = {
             failure
         );
 
-
+        document.getElementById("writeButton").addEventListener('click',writeOnTag, false);
     },
     onNdef: function (nfcEvent) {
-        var tag = nfcEvent.tag;
 
-        // BB7 has different names, copy to Android names
-        if (tag.serialNumber) {
-            tag.id = tag.serialNumber;
-            tag.isWritable = !tag.isLocked;
-            tag.canMakeReadOnly = tag.isLockable;
+        if(writing)
+        {
+          var mimeType = document.forms[0].elements["mimeType"].value,
+          payload = document.forms[0].elements["payload"].value,
+          record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
+          nfc.write(
+                [record],
+                function () {
+                  alert("Wrote data to tag.");
+                },
+                function (reason) {
+                  alert("There was a problem");
+                }
+          );
+          writing = false; // not in writing mode anymore
         }
+        else
+        {
+          var tag = nfcEvent.tag;
 
-        document.getElementById("outText").innerHTML = JSON.stringify(tag) + "<br/><br/><br/><br/>Message: " + "<br/><br/>" +   nfc.bytesToString(tag.ndefMessage[0].payload).substring(3);
+          // BB7 has different names, copy to Android names
+          if (tag.serialNumber) {
+              tag.id = tag.serialNumber;
+              tag.isWritable = !tag.isLocked;
+              tag.canMakeReadOnly = tag.isLockable;
+          }
+
+          document.getElementById("outText").innerHTML = JSON.stringify(tag) + "<br/><br/><br/><br/>Message: " + "<br/><br/>" +   nfc.bytesToString(tag.ndefMessage[0].payload);
+        }
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -74,5 +101,4 @@ var app = {
         console.log('Received Event: ' + id);
     }
 };
-
 app.initialize();
