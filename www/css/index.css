@@ -77,17 +77,16 @@ body {
     margin: 10px 0;
     min-width: 200px;
 }
-.readFields
+.readFields, .writeFields
 {
     text-align: left;
     margin-top: 30px;
     width: 100%;
 }
-.readFields input
+.writeFields textarea, .writeFields input, .readFields input
 {
     width: 100%;
 }
-
 
 /* Landscape layout (with min-width) */
 @media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
